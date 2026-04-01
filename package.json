@@ -4,7 +4,7 @@
   "description": "自动根据当前代理出口地区，同步锁定 macOS 与 Chrome 的时区、地区和浏览器语言。",
   "type": "module",
   "bin": {
-    "region-lock": "./bin/region-lock.mjs"
+    "cc-region-lock": "./bin/region-lock.mjs"
   },
   "scripts": {
     "check": "node --check src/*.mjs bin/region-lock.mjs",

@@ -49,24 +49,40 @@
 
 后续可以继续补更多国家画像。
 
+## 安装
+
+不需要先下载仓库，直接一行命令安装：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/feitangyuan/cc-region-lock/main/install.sh | zsh
+```
+
+安装完成后，后续直接使用 `cc-region-lock` 即可。
+
+如果你已经 clone 了仓库，也可以本地执行：
+
+```bash
+./install.sh
+```
+
 ## 使用方式
 
 先检查当前探测结果：
 
 ```bash
-node bin/region-lock.mjs --check
+cc-region-lock --check
 ```
 
 只看将要应用什么，不真正写入：
 
 ```bash
-node bin/region-lock.mjs --dry-run
+cc-region-lock --dry-run
 ```
 
 直接应用：
 
 ```bash
-node bin/region-lock.mjs
+cc-region-lock
 ```
 
 ## 为什么说它更“持久”

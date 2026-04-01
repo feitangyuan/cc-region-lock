@@ -1,0 +1,14 @@
+{
+  "name": "region-lock",
+  "version": "0.1.0",
+  "description": "Lock macOS + Chrome locale settings to the current egress country profile.",
+  "type": "module",
+  "bin": {
+    "region-lock": "./bin/region-lock.mjs"
+  },
+  "scripts": {
+    "check": "node --check src/*.mjs bin/region-lock.mjs",
+    "test": "node --test tests/region-lock.test.mjs"
+  },
+  "license": "MIT"
+}

@@ -5,6 +5,7 @@ import {
   normalizeIpInfoPayload,
   resolveProfileForCountry,
   buildApplyPlan,
+  parseSystemTimezoneOutput,
   summarizeHealth,
   detectEgressPayloadFromSource,
 } from '../src/index.mjs'
@@ -58,6 +59,12 @@ test('builds an apply plan for Chrome and macOS', () => {
   assert.equal(plan.appleLocaleCommand.at(-1), 'en_SG')
   assert.deepEqual(plan.appleLanguagesCommand.slice(-3), ['en-SG', 'en', 'zh-Hans'])
   assert.equal(plan.chromeAcceptLanguages, 'en-SG,en')
+})
+
+test('parses timezone from systemsetup output', () => {
+  const timezone = parseSystemTimezoneOutput('Time Zone: Asia/Singapore\n')
+
+  assert.equal(timezone, 'Asia/Singapore')
 })
 
 test('summarizes healthy state', () => {

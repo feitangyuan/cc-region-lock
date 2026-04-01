@@ -22,10 +22,45 @@ function run(command, args, options = {}) {
 
 function runInteractive(command, args) {
   const result = spawnSync(command, args, {
-    stdio: 'inherit',
+    stdio: ['inherit', 'ignore', 'ignore'],
   })
   if (result.status !== 0) {
     throw new Error(`${command} failed with status ${result.status ?? 'unknown'}`)
+  }
+}
+
+export function parseSystemTimezoneOutput(output) {
+  const match = output.match(/Time Zone:\s*(.+)\s*$/m)
+  return match?.[1]?.trim() || ''
+}
+
+function readCurrentSystemTimezone() {
+  return parseSystemTimezoneOutput(run('systemsetup', ['-gettimezone']))
+}
+
+function ensureSystemTimezone(timezone) {
+  const currentTimezone = readCurrentSystemTimezone()
+  if (currentTimezone === timezone) {
+    return {
+      changed: false,
+      currentTimezone,
+    }
+  }
+
+  if (process.getuid?.() === 0) {
+    runInteractive('systemsetup', ['-settimezone', timezone])
+  } else {
+    runInteractive('sudo', ['systemsetup', '-settimezone', timezone])
+  }
+
+  const nextTimezone = readCurrentSystemTimezone()
+  if (nextTimezone !== timezone) {
+    throw new Error(`timezone apply failed: expected ${timezone}, got ${nextTimezone || 'unknown'}`)
+  }
+
+  return {
+    changed: true,
+    currentTimezone,
   }
 }
 
@@ -96,12 +131,11 @@ export function applyProfile(profile, { dryRun = false } = {}) {
   quitChromeIfRunning()
   run('defaults', plan.appleLocaleCommand)
   run('defaults', plan.appleLanguagesCommand)
-  if (process.getuid?.() === 0) {
-    runInteractive('systemsetup', plan.timezoneCommand)
-  } else {
-    runInteractive('sudo', ['systemsetup', ...plan.timezoneCommand])
-  }
+  const timezoneResult = ensureSystemTimezone(profile.timezone)
   updateChromePreferences(profile)
 
-  return plan
+  return {
+    ...plan,
+    timezoneChanged: timezoneResult.changed,
+  }
 }

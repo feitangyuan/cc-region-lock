@@ -1,4 +1,8 @@
+import fs from 'node:fs'
 import { execFileSync, spawnSync } from 'node:child_process'
+
+const LOCALTIME_PATH = '/etc/localtime'
+const ZONEINFO_MARKER = '/var/db/timezone/zoneinfo/'
 
 function run(command, args, options = {}) {
   return execFileSync(command, args, {
@@ -22,7 +26,21 @@ export function parseSystemTimezoneOutput(output) {
   return match?.[0]?.trim() || ''
 }
 
+export function parseTimezoneFromLocaltimeTarget(target) {
+  const index = target.indexOf(ZONEINFO_MARKER)
+  if (index === -1) return ''
+  return target.slice(index + ZONEINFO_MARKER.length).trim()
+}
+
 function readCurrentSystemTimezone() {
+  try {
+    const target = fs.readlinkSync(LOCALTIME_PATH)
+    const timezone = parseTimezoneFromLocaltimeTarget(target)
+    if (timezone) return timezone
+  } catch {
+    // Fall through to systemsetup for environments without a localtime symlink.
+  }
+
   return parseSystemTimezoneOutput(run('systemsetup', ['-gettimezone']))
 }
 

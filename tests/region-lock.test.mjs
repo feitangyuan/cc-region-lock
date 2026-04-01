@@ -5,6 +5,7 @@ import {
   normalizeIpInfoPayload,
   resolveProfileForCountry,
   buildApplyPlan,
+  parseTimezoneFromLocaltimeTarget,
   parseSystemTimezoneOutput,
   summarizeHealth,
   detectEgressPayloadFromSource,
@@ -65,6 +66,12 @@ test('parses timezone from systemsetup output', () => {
 
 test('parses timezone from localized systemsetup output', () => {
   const timezone = parseSystemTimezoneOutput('时区：Asia/Singapore\n')
+
+  assert.equal(timezone, 'Asia/Singapore')
+})
+
+test('parses timezone from localtime symlink target', () => {
+  const timezone = parseTimezoneFromLocaltimeTarget('/var/db/timezone/zoneinfo/Asia/Singapore')
 
   assert.equal(timezone, 'Asia/Singapore')
 })

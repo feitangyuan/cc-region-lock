@@ -1,7 +1,7 @@
 {
-  "name": "region-lock",
+  "name": "cc-region-lock",
   "version": "0.1.0",
-  "description": "Lock macOS + Chrome locale settings to the current egress country profile.",
+  "description": "自动根据当前代理出口地区，同步锁定 macOS 与 Chrome 的时区、地区和浏览器语言。",
   "type": "module",
   "bin": {
     "region-lock": "./bin/region-lock.mjs"

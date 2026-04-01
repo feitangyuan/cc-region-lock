@@ -1,16 +1,4 @@
-import fs from 'node:fs'
-import path from 'node:path'
 import { execFileSync, spawnSync } from 'node:child_process'
-
-const CHROME_PREFERENCES_PATH = path.join(
-  process.env.HOME,
-  'Library',
-  'Application Support',
-  'Google',
-  'Chrome',
-  'Default',
-  'Preferences',
-)
 
 function run(command, args, options = {}) {
   return execFileSync(command, args, {
@@ -68,9 +56,6 @@ export function buildApplyPlan(profile) {
   return {
     timezoneCommand: ['-settimezone', profile.timezone],
     appleLocaleCommand: ['write', '-g', 'AppleLocale', '-string', profile.appleLocale],
-    appleLanguagesCommand: ['write', '-g', 'AppleLanguages', '-array', ...profile.appleLanguages],
-    chromePreferencesPath: CHROME_PREFERENCES_PATH,
-    chromeAcceptLanguages: profile.chromeAcceptLanguages,
   }
 }
 
@@ -107,32 +92,12 @@ export function summarizeHealth(snapshot) {
   }
 }
 
-function quitChromeIfRunning() {
-  spawnSync('osascript', ['-e', 'tell application "Google Chrome" to quit'], {
-    stdio: 'ignore',
-  })
-}
-
-function updateChromePreferences(profile) {
-  const raw = fs.readFileSync(CHROME_PREFERENCES_PATH, 'utf8')
-  const preferences = JSON.parse(raw)
-
-  preferences.intl ??= {}
-  preferences.intl.accept_languages = profile.chromeAcceptLanguages
-  preferences.intl.selected_languages = profile.chromeAcceptLanguages
-
-  fs.writeFileSync(CHROME_PREFERENCES_PATH, JSON.stringify(preferences))
-}
-
 export function applyProfile(profile, { dryRun = false } = {}) {
   const plan = buildApplyPlan(profile)
   if (dryRun) return plan
 
-  quitChromeIfRunning()
   run('defaults', plan.appleLocaleCommand)
-  run('defaults', plan.appleLanguagesCommand)
   const timezoneResult = ensureSystemTimezone(profile.timezone)
-  updateChromePreferences(profile)
 
   return {
     ...plan,

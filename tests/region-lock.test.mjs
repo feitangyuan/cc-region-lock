@@ -35,8 +35,6 @@ test('resolves Singapore preset', () => {
   assert.equal(profile.country, 'SG')
   assert.equal(profile.timezone, 'Asia/Singapore')
   assert.equal(profile.appleLocale, 'en_SG')
-  assert.deepEqual(profile.appleLanguages, ['en-SG', 'en', 'zh-Hans'])
-  assert.equal(profile.chromeAcceptLanguages, 'en-SG,en')
 })
 
 test('resolves Japan preset', () => {
@@ -44,8 +42,6 @@ test('resolves Japan preset', () => {
   assert.equal(profile.country, 'JP')
   assert.equal(profile.timezone, 'Asia/Tokyo')
   assert.equal(profile.appleLocale, 'ja_JP')
-  assert.deepEqual(profile.appleLanguages, ['ja-JP', 'ja', 'en'])
-  assert.equal(profile.chromeAcceptLanguages, 'ja-JP,ja,en')
 })
 
 test('throws for unsupported country', () => {
@@ -57,8 +53,8 @@ test('builds an apply plan for Chrome and macOS', () => {
 
   assert.equal(plan.timezoneCommand.at(-1), 'Asia/Singapore')
   assert.equal(plan.appleLocaleCommand.at(-1), 'en_SG')
-  assert.deepEqual(plan.appleLanguagesCommand.slice(-3), ['en-SG', 'en', 'zh-Hans'])
-  assert.equal(plan.chromeAcceptLanguages, 'en-SG,en')
+  assert.equal('appleLanguagesCommand' in plan, false)
+  assert.equal('chromeAcceptLanguages' in plan, false)
 })
 
 test('parses timezone from systemsetup output', () => {

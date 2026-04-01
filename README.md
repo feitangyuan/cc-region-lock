@@ -1,6 +1,6 @@
 # cc-region-lock
 
-`cc-region-lock` 是一个面向中文用户的 `macOS + Chrome` 小工具：自动根据当前代理出口地区，同步锁定系统时区、地区设置和浏览器语言。
+`cc-region-lock` 是一个面向中文用户的 `macOS + Chrome` 小工具：自动根据当前代理出口地区，同步锁定系统时区和地区格式，但默认不改系统语言和浏览器语言。
 
 ## 背景
 
@@ -17,8 +17,7 @@
 也就是优先把这些基础环境对齐到当前出口地区：
 
 - 系统时区
-- 系统地区 / 语言
-- Chrome `Accept-Language`
+- 系统地区格式
 
 这类设置就算以后 `Claude` 自己改策略、改字段、补内部实现，也依然成立，因为服务看到的基础环境本来就是第一层事实。
 
@@ -34,11 +33,13 @@
 
 - 通过 `ipinfo.io` 探测当前出口地区
 - 根据国家匹配对应画像
-- 优雅退出 Chrome
 - 修改 macOS 时区
 - 修改 `AppleLocale`
-- 修改 `AppleLanguages`
-- 修改 Chrome `intl.accept_languages`
+
+默认不会修改：
+
+- `AppleLanguages`
+- Chrome `Accept-Language`
 
 如果修改时区需要管理员权限，系统会要求输入 `sudo` 密码。
 

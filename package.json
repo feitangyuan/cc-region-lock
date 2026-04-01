@@ -1,13 +1,17 @@
 {
   "name": "cc-region-lock",
   "version": "0.1.0",
-  "description": "自动根据当前代理出口地区，同步锁定 macOS 与 Chrome 的时区、地区和浏览器语言。",
+  "description": "给 Codex / Claude Code 用的一键地区锁定仓库：统一出口检查、系统时区与终端代理环境。",
   "type": "module",
   "bin": {
-    "cc-region-lock": "./bin/region-lock.mjs"
+    "cc-region-lock": "./bin/region-lock.mjs",
+    "cc-region-check": "./bin/region-check.mjs",
+    "cc-egress-check": "./bin/region-egress-check.mjs",
+    "cc-region-health": "./bin/region-health.mjs",
+    "cc-region-proxy": "./bin/region-proxy.mjs"
   },
   "scripts": {
-    "check": "node --check src/*.mjs bin/region-lock.mjs",
+    "check": "node --check src/*.mjs bin/*.mjs",
     "test": "node --test tests/region-lock.test.mjs"
   },
   "license": "MIT"

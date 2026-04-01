@@ -1,7 +1,7 @@
 export {
   normalizeIpInfoPayload,
-  detectEgressPayloadFromSource,
-} from './detect.mjs'
+  gatherEgressSnapshot,
+} from './egress.mjs'
 
 export {
   resolveProfileForCountry,
@@ -13,3 +13,24 @@ export {
   parseSystemTimezoneOutput,
   summarizeHealth,
 } from './apply.mjs'
+
+export {
+  buildProxyEnv,
+  resolveProxyConfig,
+} from './proxy.mjs'
+
+export {
+  gatherRegionSnapshot,
+} from './region.mjs'
+
+export {
+  evaluateEgressSnapshot,
+  evaluateHealth,
+  evaluateRegionSnapshot,
+  shouldNotify,
+} from './health.mjs'
+
+export {
+  buildShellBlock,
+  upsertShellBlock,
+} from './shell.mjs'

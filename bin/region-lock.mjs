@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 
-import { applyProfile, buildApplyPlan, summarizeHealth } from '../src/apply.mjs'
-import { detectEgressPayload, detectLocalTimezoneOffset } from '../src/detect.mjs'
+import { applyProfile, buildApplyPlan } from '../src/apply.mjs'
+import { gatherEgressSnapshot } from '../src/egress.mjs'
+import { evaluateEgressSnapshot, evaluateHealth, evaluateRegionSnapshot } from '../src/health.mjs'
 import { resolveProfileForCountry, listSupportedCountries } from '../src/presets.mjs'
+import { gatherRegionSnapshot } from '../src/region.mjs'
+import { buildShellBlock, upsertShellBlock } from '../src/shell.mjs'
 
 function printJson(value) {
   console.log(JSON.stringify(value, null, 2))
@@ -14,38 +17,55 @@ function main() {
   const check = args.has('--check')
 
   try {
-    const egress = detectEgressPayload()
+    const egress = gatherEgressSnapshot()
     const profile = resolveProfileForCountry(egress.country)
-    const health = summarizeHealth({
-      country: egress.country,
-      timezone: egress.timezone,
-      localTimezoneOffset: detectLocalTimezoneOffset(),
-    })
+    const regionBefore = gatherRegionSnapshot()
+    const healthBefore = evaluateHealth(
+      evaluateRegionSnapshot(regionBefore, profile),
+      evaluateEgressSnapshot(egress, profile),
+    )
 
     if (check) {
       printJson({
         detected: egress,
         target: profile,
-        health,
+        region: regionBefore,
+        health: healthBefore,
       })
-      process.exitCode = health.ok ? 0 : 1
+      process.exitCode = healthBefore.ok ? 0 : 1
       return
     }
 
     const plan = dryRun ? buildApplyPlan(profile) : applyProfile(profile)
+    const shellPlan = dryRun
+      ? { shellRcPath: `${process.env.HOME}/.zshrc`, changed: true }
+      : upsertShellBlock(null, buildShellBlock())
+    const regionAfter = gatherRegionSnapshot()
+    const healthAfter = evaluateHealth(
+      evaluateRegionSnapshot(regionAfter, profile),
+      evaluateEgressSnapshot(egress, profile),
+    )
+
     printJson({
       detected: egress,
       target: profile,
       dryRun,
       applied: plan,
+      shell: {
+        ...shellPlan,
+      },
+      health: healthAfter,
       next: [
-        'Reopen Google Chrome',
-        'Re-login sensitive sites if you changed country recently',
+        'Open a new terminal session to load shell proxy exports',
+        'Use cc-egress-check / cc-region-check / cc-region-health to verify consistency',
       ],
     })
+    process.exitCode = healthAfter.ok ? 0 : 1
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error))
-    console.error(`Supported countries: ${listSupportedCountries().join(', ')}`)
+    if (String(error).includes('Unsupported country')) {
+      console.error(`Supported countries: ${listSupportedCountries().join(', ')}`)
+    }
     process.exitCode = 1
   }
 }

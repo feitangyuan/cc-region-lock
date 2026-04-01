@@ -5,7 +5,6 @@ REPO_SLUG="${CC_REGION_LOCK_REPO:-feitangyuan/cc-region-lock}"
 REF="${CC_REGION_LOCK_REF:-main}"
 INSTALL_ROOT="${HOME}/.local/share/cc-region-lock"
 BIN_DIR="${HOME}/.local/bin"
-BIN_PATH="${BIN_DIR}/cc-region-lock"
 ARCHIVE_URL="https://github.com/${REPO_SLUG}/archive/refs/heads/${REF}.tar.gz"
 TMP_DIR="$(mktemp -d)"
 
@@ -24,15 +23,42 @@ rm -rf "$INSTALL_ROOT/current"
 mkdir -p "$INSTALL_ROOT/current"
 cp -R "$EXTRACTED_DIR"/. "$INSTALL_ROOT/current/"
 
-cat > "$BIN_PATH" <<EOF
+cat > "$BIN_DIR/cc-region-lock" <<EOF
 #!/bin/zsh
 exec node "$INSTALL_ROOT/current/bin/region-lock.mjs" "\$@"
 EOF
 
-chmod +x "$BIN_PATH"
+cat > "$BIN_DIR/cc-region-check" <<EOF
+#!/bin/zsh
+exec node "$INSTALL_ROOT/current/bin/region-check.mjs" "\$@"
+EOF
 
-echo "Installed: $BIN_PATH"
+cat > "$BIN_DIR/cc-egress-check" <<EOF
+#!/bin/zsh
+exec node "$INSTALL_ROOT/current/bin/region-egress-check.mjs" "\$@"
+EOF
+
+cat > "$BIN_DIR/cc-region-health" <<EOF
+#!/bin/zsh
+exec node "$INSTALL_ROOT/current/bin/region-health.mjs" "\$@"
+EOF
+
+cat > "$BIN_DIR/cc-region-proxy" <<EOF
+#!/bin/zsh
+exec node "$INSTALL_ROOT/current/bin/region-proxy.mjs" "\$@"
+EOF
+
+chmod +x \
+  "$BIN_DIR/cc-region-lock" \
+  "$BIN_DIR/cc-region-check" \
+  "$BIN_DIR/cc-egress-check" \
+  "$BIN_DIR/cc-region-health" \
+  "$BIN_DIR/cc-region-proxy"
+
+echo "Installed: $BIN_DIR/cc-region-lock"
 echo "Usage:"
-echo "  cc-region-lock --check"
-echo "  cc-region-lock --dry-run"
 echo "  cc-region-lock"
+echo "  cc-region-lock --check"
+echo "  cc-egress-check"
+echo "  cc-region-check"
+echo "  cc-region-health"

@@ -63,6 +63,12 @@ test('parses timezone from systemsetup output', () => {
   assert.equal(timezone, 'Asia/Singapore')
 })
 
+test('parses timezone from localized systemsetup output', () => {
+  const timezone = parseSystemTimezoneOutput('时区：Asia/Singapore\n')
+
+  assert.equal(timezone, 'Asia/Singapore')
+})
+
 test('summarizes healthy state', () => {
   const summary = summarizeHealth({
     country: 'SG',

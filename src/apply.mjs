@@ -18,8 +18,8 @@ function runInteractive(command, args) {
 }
 
 export function parseSystemTimezoneOutput(output) {
-  const match = output.match(/Time Zone:\s*(.+)\s*$/m)
-  return match?.[1]?.trim() || ''
+  const match = output.match(/\b[A-Za-z_]+(?:\/[A-Za-z_+-]+)+\b/)
+  return match?.[0]?.trim() || ''
 }
 
 function readCurrentSystemTimezone() {

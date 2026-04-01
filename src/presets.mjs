@@ -4,14 +4,12 @@ const PROFILES = {
     label: 'Singapore',
     timezone: 'Asia/Singapore',
     timezoneOffset: '+0800',
-    appleLocale: 'en_SG',
   },
   JP: {
     country: 'JP',
     label: 'Japan',
     timezone: 'Asia/Tokyo',
     timezoneOffset: '+0900',
-    appleLocale: 'ja_JP',
   },
 }
 

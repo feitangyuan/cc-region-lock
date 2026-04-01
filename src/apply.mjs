@@ -55,7 +55,6 @@ function ensureSystemTimezone(timezone) {
 export function buildApplyPlan(profile) {
   return {
     timezoneCommand: ['-settimezone', profile.timezone],
-    appleLocaleCommand: ['write', '-g', 'AppleLocale', '-string', profile.appleLocale],
   }
 }
 
@@ -96,7 +95,6 @@ export function applyProfile(profile, { dryRun = false } = {}) {
   const plan = buildApplyPlan(profile)
   if (dryRun) return plan
 
-  run('defaults', plan.appleLocaleCommand)
   const timezoneResult = ensureSystemTimezone(profile.timezone)
 
   return {

@@ -34,14 +34,14 @@ test('resolves Singapore preset', () => {
   const profile = resolveProfileForCountry('SG')
   assert.equal(profile.country, 'SG')
   assert.equal(profile.timezone, 'Asia/Singapore')
-  assert.equal(profile.appleLocale, 'en_SG')
+  assert.equal('appleLocale' in profile, false)
 })
 
 test('resolves Japan preset', () => {
   const profile = resolveProfileForCountry('JP')
   assert.equal(profile.country, 'JP')
   assert.equal(profile.timezone, 'Asia/Tokyo')
-  assert.equal(profile.appleLocale, 'ja_JP')
+  assert.equal('appleLocale' in profile, false)
 })
 
 test('throws for unsupported country', () => {
@@ -52,7 +52,7 @@ test('builds an apply plan for Chrome and macOS', () => {
   const plan = buildApplyPlan(resolveProfileForCountry('SG'))
 
   assert.equal(plan.timezoneCommand.at(-1), 'Asia/Singapore')
-  assert.equal(plan.appleLocaleCommand.at(-1), 'en_SG')
+  assert.equal('appleLocaleCommand' in plan, false)
   assert.equal('appleLanguagesCommand' in plan, false)
   assert.equal('chromeAcceptLanguages' in plan, false)
 })
